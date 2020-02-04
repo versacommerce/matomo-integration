@@ -1,0 +1,78 @@
+<!-- Piwik -->
+<script type="text/javascript">
+  var piwikUrl = '{{ integration['piwik_url'] }}';
+  if (piwikUrl.indexOf('//') != -1 ){
+    var piwikUrla = piwikUrl.split('//');
+    var piwikUrlShort = piwikUrla[1];
+  }
+  else {
+    var piwikUrlShort = piwikUrl;
+  }
+  piwikUrlShort = '//' + piwikUrlShort;
+  if (piwikUrlShort.slice(piwikUrlShort.length-1,piwikUrlShort.length) == '/' ){
+  	var piwikUrlEnd = piwikUrlShort;
+  }
+  else {
+    var piwikUrlEnd = piwikUrlShort + '/';
+  }
+
+  console.log(piwikUrlEnd);
+
+  var _paq = _paq || [];
+  /* tracker methods like "setCustomDimension" should be called before "trackPageView" */
+  _paq.push(['enableLinkTracking']);
+  (function() {
+    var u = piwikUrlEnd;
+    _paq.push(['setTrackerUrl', u+'piwik.php']);
+    _paq.push(['setSiteId', '{{ integration['piwik_id'] }}']);
+    var d=document, g=d.createElement('script'), s=d.getElementsByTagName('script')[0];
+    g.type='text/javascript'; g.async=true; g.defer=true; g.src=u+'piwik.js'; s.parentNode.insertBefore(g,s);
+  })();
+  {% if template contains 'thankyou' %}
+  	// add the ordered products ass a loop
+  	{% for item in cart.items %}
+    	_paq.push(['addEcommerceItem',
+      "{{ item.code }}", // SKU: Product unique identifier
+      "{{ item.title }}", // Product name
+      "{{ item.category }}", // Product category. You can also specify an array of up to 5 categories eg. ["Books", "New releases", "Biography"]
+       {{ item.price }}, // Product price
+       {{ item.quantity }} // Product quantity
+      ]);
+      // Here you can add other products in the order
+     {% endfor %}
+      // Specifiy the order details to Piwik server &amp; sends the data to Piwik server
+      _paq.push(['trackEcommerceOrder',
+       "{{ cart.order_code }}",
+       {{ cart.total_price }}, // Order Revenue grand total (includes tax, shipping, and subtracted discount)
+       {{ cart.subtotal_price }}, // Order sub total (excludes shipping)
+       {{ cart.tax_amount }}, // Tax amount
+       {{ cart.shipping_cost }}, // Shipping amount
+       {% if cart.discount > 0 %} true {% else %} false {% endif %} // Discount offered (set to false for unspecified parameter)
+      ]);
+  {% endif %}
+  {% if template contains 'product' %}
+  	// all parameters are optional, but we recommend to set at minimum productSKU and productName
+      _paq.push(['setEcommerceView',
+      "{{ product.code }}", // SKU: Product unique identifier
+      "{{ product.title }}", // Product name
+      "{{ product.category }}", // Product category, or array of up to 5 categories
+       {{ product.price }} // Product Price as displayed on the page
+      ]);
+  {% endif %}
+  {% if template contains 'cart' %}
+  		{% for item in cart.items %}
+        _paq.push(['addEcommerceItem',
+        "{{ item.code }}", // SKU: Product unique identifier
+        "{{ item.title }}", // Product name
+        "{{ item.category }}",  //  Product category
+        {{ item.price }}, // (recommended) Product price
+        {{ item.quantity }} // (optional, default to 1) Product quantity
+        ]);
+      {% endfor %}
+      // Records the cart for this visit
+      _paq.push(['trackEcommerceCartUpdate',
+      {{ cart.subtotal_price }}]); // Cart amount (subtotal)
+  {% endif %}
+   _paq.push(['trackPageView']);
+</script>
+<!-- End Piwik Code -->
