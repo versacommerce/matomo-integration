@@ -1,5 +1,5 @@
 [<img src="versacommerce.png" width="250px" align="right" alt="VersaCommerce.de">](https://www.versacommerce.de/?utm_source=github)
-[<img src="matomo.png" width="90px" align="right" alt="matomo.org">](https://www.matomo.org/?utm_source=www.versacommerce.de)
+[<img src="matomo.png" width="250px" align="right" alt="matomo.org">](https://www.matomo.org/?utm_source=www.versacommerce.de)
 
 [VersaCommerce] [integration] [javascript] [matomo]
 
